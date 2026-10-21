@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>بوابة الذكاء الاصطناعي الشاملة - Puter AI</title>
+    <!-- استدعاء مكتبة Puter.js v2 -->
+    <script src="https://js.puter.com/v2/"></script>
+    <style>
+        :root {
+            --bg-color: #0f172a;
+            --card-bg: #1e293b;
+            --primary: #3b82f6;
+            --primary-hover: #2563eb;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --border-color: #334155;
+            --user-msg: #2563eb;
+            --ai-msg: #334155;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            display: flex;
+            flex-direction: column;
+            height: 100dvh;
+            overflow: hidden;
+        }
+
+        /* الهيدر العلوي */
+        header {
+            background-color: var(--card-bg);
+            padding: 12px 16px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-shrink: 0;
+        }
+
+        .logo-area {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: bold;
+            font-size: 1.1rem;
+            color: #60a5fa;
+        }
+
+        .auth-btn {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        /* شريط التبويبات للهاتف */
+        .tabs {
+            display: flex;
+            background-color: var(--card-bg);
+            border-bottom: 1px solid var(--border-color);
+            flex-shrink: 0;
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 12px 8px;
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            transition: all 0.2s;
+        }
+
+        .tab-btn.active {
+            color: var(--primary);
+            border-bottom-color: var(--primary);
+            background-color: rgba(59, 130, 246, 0.05);
+        }
+
+        /* محتوى الصفحات */
+        .tab-content {
+            display: none;
+            flex: 1;
+            flex-direction: column;
+            overflow: hidden;
+            padding: 12px;
+        }
+
+        .tab-content.active {
+            display: flex;
+        }
+
+        /* شريط اختيار النموذج */
+        .model-bar {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 10px;
+            flex-shrink: 0;
+        }
+
+        select, input[type="text"], textarea {
+            background-color: var(--card-bg);
+            color: var(--text-main);
+            border: 1px solid var(--border-color);
+            padding: 10px 12px;
+            border-radius: 10px;
+            font-size: 0.9rem;
+            outline: none;
+        }
+
+        select {
+            flex: 1;
+        }
+
+        /* منطقة المحادثة */
+        #chat-box {
+            flex: 1;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            padding: 8px 4px;
+            margin-bottom: 10px;
+        }
+
+        .msg {
+            max-width: 85%;
+            padding: 10px 14px;
+            border-radius: 14px;
+            line-height: 1.5;
+            font-size: 0.95rem;
+            word-wrap: break-word;
+            white-space: pre-wrap;
+        }
+
+        .msg.user {
+            background-color: var(--user-msg);
+            color: white;
+            align-self: flex-start;
+            border-bottom-right-radius: 4px;
+        }
+
+        .msg.ai {
+            background-color: var(--ai-msg);
+            color: var(--text-main);
+            align-self: flex-end;
+            border-bottom-left-radius: 4px;
+        }
+
+        .chat-input-area {
+            display: flex;
+            gap: 8px;
+            flex-shrink: 0;
+        }
+
+        .chat-input-area textarea {
+            flex: 1;
+            height: 46px;
+            resize: none;
+        }
+
+        .send-btn {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 0 18px;
+            border-radius: 10px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .send-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* قسم الصور والصوت */
+        .tool-card {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            overflow-y: auto;
+        }
+
+        .action-btn {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .result-area {
+            margin-top: 12px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 200px;
+            border: 1px dashed var(--border-color);
+            border-radius: 10px;
+            padding: 12px;
+            text-align: center;
+        }
+
+        .result-area img {
+            max-width: 100%;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        }
+
+        .status-badge {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="logo-area">
+            <span>🤖 بوابة الذكاء الاصطناعي</span>
+        </div>
+        <button id="auth-btn" class="auth-btn" onclick="handleAuth()">تسجيل الدخول</button>
+    </header>
+
+    <div class="tabs">
+        <button class="tab-btn active" onclick="switchTab('chat-tab', this)">💬 المحادثة</button>
+        <button class="tab-btn" onclick="switchTab('image-tab', this)">🎨 الصور</button>
+        <button class="tab-btn" onclick="switchTab('tts-tab', this)">🔊 الصوتيات</button>
+    </div>
+
+    <!-- 1. قسم المحادثة الذكية -->
+    <div id="chat-tab" class="tab-content active">
+        <div class="model-bar">
+            <select id="model-select" aria-label="اختر نموذج الذكاء الاصطناعي">
+                <option value="gpt-5.4-nano">⚡ النموذج الافتراضي السريع (GPT-5.4 Nano)</option>
+                <option value="gpt-4o-mini">🧠 OpenAI (GPT-4o Mini)</option>
+                <option value="claude-3-5-sonnet">✨ Anthropic (Claude 3.5 Sonnet)</option>
+                <option value="gemini-3-flash-preview">🚀 Google (Gemini Flash)</option>
+            </select>
+            <button class="auth-btn" style="background:#475569;" onclick="loadAllModels()">جلب كل النماذج</button>
+        </div>
+
+        <div id="chat-box">
+            <div class="msg ai">مرحباً بك! أنا جاهز لمساعدتك مجاناً عبر حسابك في Puter. اختر النموذج من الأعلى واكتب سؤالك بالأسفل.</div>
+        </div>
+
+        <div class="chat-input-area">
+            <textarea id="chat-input" placeholder="اكتب رسالتك هنا..."></textarea>
+            <button id="send-btn" class="send-btn" onclick="sendMessage()">إرسال</button>
+        </div>
+    </div>
+
+    <!-- 2. قسم توليد الصور -->
+    <div id="image-tab" class="tab-content">
+        <div class="tool-card">
+            <h3>🎨 تحويل النص إلى صورة بالذكاء الاصطناعي</h3>
+            <p class="status-badge">اكتب وصف الصورة التي تتخيلها (يفضل باللغة الإنجليزية لدقة أعلى أو بالعربية):</p>
+            <textarea id="img-prompt" rows="3" placeholder="مثال: A futuristic city in the desert at sunset, cinematic lighting"></textarea>
+            <label style="font-size: 0.85rem; display: flex; align-items: center; gap: 6px;">
+                <input type="checkbox" id="img-test-mode"> وضع التجربة السريع (بدون خصم من الرصيد المجاني)
+            </label>
+            <button id="img-btn" class="action-btn" onclick="generateImage()">توليد الصورة الآن</button>
+            <div id="img-result" class="result-area">
+                <span class="status-badge">ستظهر الصورة المولدة هنا...</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- 3. قسم تحويل النص إلى كلام -->
+    <div id="tts-tab" class="tab-content">
+        <div class="tool-card">
+            <h3>🔊 تحويل النص إلى تعليق صوتي (TTS)</h3>
+            <p class="status-badge">أدخل النص الذي تريد تحويله إلى ملف صوتي مسموع:</p>
+            <textarea id="tts-input" rows="4" placeholder="اكتب النص هنا..."></textarea>
+            <button id="tts-btn" class="action-btn" onclick="generateSpeech()">تحويل وتشغيل الصوت</button>
+            <div id="tts-result" class="result-area" style="min-height: 100px;">
+                <span class="status-badge">مشغل الصوت سيظهر هنا...</span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let chatHistory = [];
+
+        // التحقق من حالة تسجيل الدخول عند فتح الصفحة
+        async function checkAuthStatus() {
+            try {
+                if (puter.auth.isSignedIn()) {
+                    const user = await puter.auth.getUser();
+                    document.getElementById('auth-btn').innerText = '👤 ' + user.username;
+                    document.getElementById('auth-btn').style.backgroundColor = '#10b981';
+                }
+            } catch (e) {
+                console.log('Puter auth check:', e);
+            }
+        }
+        window.addEventListener('load', checkAuthStatus);
+
+        // تسجيل الدخول
+        async function handleAuth() {
+            try {
+                await puter.auth.signIn();
+                await checkAuthStatus();
+            } catch (err) {
+                alert('تعذر تسجيل الدخول. تأكد من السماح بالنوافذ المنبثقة في المتصفح.');
+            }
+        }
+
+        // التبديل بين التبويبات
+        function switchTab(tabId, btnElement) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+            document.getElementById(tabId).classList.add('active');
+            btnElement.classList.add('active');
+        }
+
+        // جلب جميع النماذج المتوفرة ديناميكياً من Puter
+        async function loadAllModels() {
+            const select = document.getElementById('model-select');
+            const originalText = select.options[0].text;
+            select.options[0].text = '⏳ جاري جلب النماذج...';
+            try {
+                const models = await puter.ai.listModels();
+                if (models && models.length > 0) {
+                    select.innerHTML = '';
+                    models.forEach(m => {
+                        const opt = document.createElement('option');
+                        opt.value = m.id;
+                        opt.textContent = (m.name ? `${m.name} (${m.id})` : m.id);
+                        select.appendChild(opt);
+                    });
+                    alert(`تم جلب ${models.length} نموذج ذكاء اصطناعي بنجاح! يمكنك الاختيار منها الآن.`);
+                }
+            } catch (err) {
+                select.options[0].text = originalText;
+                alert('حدث خطأ أثناء جلب القائمة: ' + (err.message || err));
+            }
+        }
+
+        // إرسال رسالة في الشات
+        async function sendMessage() {
+            const inputEl = document.getElementById('chat-input');
+            const sendBtn = document.getElementById('send-btn');
+            const chatBox = document.getElementById('chat-box');
+            const selectedModel = document.getElementById('model-select').value;
+            const text = inputEl.value.trim();
+
+            if (!text) return;
+
+            // إضافة رسالة المستخدم
+            const userDiv = document.createElement('div');
+            userDiv.className = 'msg user';
+            userDiv.textContent = text;
+            chatBox.appendChild(userDiv);
+
+            inputEl.value = '';
+            sendBtn.disabled = true;
+
+            // إضافة فقاعة رد الذكاء الاصطناعي
+            const aiDiv = document.createElement('div');
+            aiDiv.className = 'msg ai';
+            aiDiv.textContent = '⏳ جاري التفكير...';
+            chatBox.appendChild(aiDiv);
+            chatBox.scrollTop = chatBox.scrollHeight;
+
+            chatHistory.push({ role: 'user', content: text });
+
+            try {
+                const response = await puter.ai.chat(chatHistory, {
+                    model: selectedModel,
+                    stream: true
+                });
+
+                aiDiv.textContent = '';
+                let fullReply = '';
+
+                for await (const part of response) {
+                    if (part?.text) {
+                        fullReply += part.text;
+                        aiDiv.textContent = fullReply;
+                        chatBox.scrollTop = chatBox.scrollHeight;
+                    }
+                }
+
+                if (!fullReply) {
+                    aiDiv.textContent = 'تم استلام الرد.';
+                }
+                chatHistory.push({ role: 'assistant', content: fullReply });
+
+            } catch (err) {
+                aiDiv.textContent = '⚠️ حدث خطأ: ' + (err.message || 'تأكد من تسجيل الدخول بحساب Puter أو تغيير النموذج المختار.');
+                chatHistory.pop();
+            } finally {
+                sendBtn.disabled = false;
+                chatBox.scrollTop = chatBox.scrollHeight;
+            }
+        }
+
+        // توليد صورة
+        async function generateImage() {
+            const prompt = document.getElementById('img-prompt').value.trim();
+            const testMode = document.getElementById('img-test-mode').checked;
+            const btn = document.getElementById('img-btn');
+            const resArea = document.getElementById('img-result');
+
+            if (!prompt) {
+                alert('يرجى كتابة وصف الصورة أولاً!');
+                return;
+            }
+
+            btn.disabled = true;
+            resArea.innerHTML = '<span class="status-badge">⏳ جاري رسم الصورة بالذكاء الاصطناعي... قد يستغرق ذلك بضع ثوانٍ.</span>';
+
+            try {
+                const imageEl = await puter.ai.txt2img(prompt, testMode);
+                resArea.innerHTML = '';
+                resArea.appendChild(imageEl);
+            } catch (err) {
+                resArea.innerHTML = `<span class="status-badge" style="color:#f87171;">⚠️ تعذر توليد الصورة: ${err.message || err}</span>`;
+            } finally {
+                btn.disabled = false;
+            }
+        }
+
+        // تحويل النص إلى صوت
+        async function generateSpeech() {
+            const text = document.getElementById('tts-input').value.trim();
+            const btn = document.getElementById('tts-btn');
+            const resArea = document.getElementById('tts-result');
+
+            if (!text) {
+                alert('يرجى كتابة النص أولاً!');
+                return;
+            }
+
+            btn.disabled = true;
+            resArea.innerHTML = '<span class="status-badge">⏳ جاري توليد الملف الصوتي...</span>';
+
+            try {
+                const audio = await puter.ai.txt2speech(text);
+                audio.controls = true;
+                audio.style.width = '100%';
+                resArea.innerHTML = '';
+                resArea.appendChild(audio);
+                audio.play();
+            } catch (err) {
+                resArea.innerHTML = `<span class="status-badge" style="color:#f87171;">⚠️ حدث خطأ: ${err.message || err}</span>`;
+            } finally {
+                btn.disabled = false;
+            }
+        }
+    </script>
+</body>
+</html>
